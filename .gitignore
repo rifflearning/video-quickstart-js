@@ -45,6 +45,7 @@ jspm_packages
 # Misc
 .DS_Store
 package-lock.json
+tags
 
 # The generated index.js
 quickstart/public/index.js

@@ -12,6 +12,7 @@ require('dotenv').load();
 const express = require('express');
 const http = require('http');
 const path = require('path');
+const rp = require('request-promise');
 const { jwt: { AccessToken } } = require('twilio');
 
 const VideoGrant = AccessToken.VideoGrant;
@@ -61,27 +62,14 @@ app.get('/', (request, response) => {
  * username for the client requesting a token, and takes a device ID as a query
  * parameter.
  */
-app.get('/token', function(request, response) {
+app.get('/token', async function(request, response) {
+
   const { identity } = request.query;
+  const tokenUrl = `http://${process.env.url}:${process.env.port}/accesstoken?identity=${identity}&room=riff_test`;
+  console.log(tokenUrl);
+  const tokenResponse = await rp(tokenUrl);
 
-  // Create an access token which we will sign and return to the client,
-  // containing the grant we just created.
-  const token = new AccessToken(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_API_KEY,
-    process.env.TWILIO_API_SECRET,
-    { ttl: MAX_ALLOWED_SESSION_DURATION }
-  );
-
-  // Assign the generated identity to the token.
-  token.identity = identity;
-
-  // Grant the access token Twilio Video capabilities.
-  const grant = new VideoGrant();
-  token.addGrant(grant);
-
-  // Serialize the token to a JWT string.
-  response.send(token.toJwt());
+  response.send(tokenResponse);
 });
 
 // Create http server and run it.

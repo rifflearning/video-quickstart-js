@@ -2,8 +2,10 @@
 
 const { connect, createLocalVideoTrack } = require('twilio-video');
 const { isMobile } = require('./browser');
+const { muteYourAudio, unmuteYourAudio } = require('../../examples/localmediacontrols/src/helpers');
 
 const $leave = $('#leave-room');
+const $muteBtn = $('#mute-audio');
 const $room = $('#room');
 const $activeParticipant = $('div#active-participant > div.participant.main', $room);
 const $activeVideo = $('video', $activeParticipant);
@@ -212,6 +214,19 @@ function trackPublished(publication, participant) {
   });
 }
 
+function muteAudio(room) {
+    const mute = !$muteBtn.hasClass('muted');
+    if(mute) {
+      muteYourAudio(room);
+      $muteBtn.toggleClass('muted');
+      $muteBtn.text('Unmute Audio');
+    } else {
+      unmuteYourAudio(room);
+      $muteBtn.toggleClass('muted');
+      $muteBtn.text('Mute Audio');
+    }
+}
+
 /**
  * Join a Room.
  * @param token - the AccessToken used to join a Room
@@ -261,6 +276,8 @@ async function joinRoom(token, connectOptions) {
     $leave.off('click', onLeave);
     room.disconnect();
   });
+
+  $muteBtn.click(() => muteAudio(room));
 
   return new Promise((resolve, reject) => {
     // Leave the Room when the "beforeunload" event is fired.

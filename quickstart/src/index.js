@@ -68,6 +68,7 @@ const deviceIds = {
   video: isMobile ? null : localStorage.getItem('videoDeviceId')
 };
 
+
 /**
  * Select your Room name, your screen name and join.
  * @param [error=null] - Error from the previous Room session, if any
@@ -89,6 +90,7 @@ async function selectAndJoinRoom(error = null) {
 
     // Extract the AccessToken from the Response.
     const token = await response.text();
+    console.log(token);
 
     // Add the specified audio device ID to ConnectOptions.
     connectOptions.audio = { deviceId: { exact: deviceIds.audio } };
